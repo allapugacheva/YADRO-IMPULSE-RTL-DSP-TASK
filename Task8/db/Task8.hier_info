@@ -1,0 +1,22 @@
+|traffic_light
+clk => cnt[0].CLK
+clk => control_reg.CLK
+clk => state~1.DATAIN
+rst => cnt[0].ACLR
+rst => control_reg.ACLR
+rst => state~3.DATAIN
+control => next_state.OUTPUTSELECT
+control => next_state.OUTPUTSELECT
+control => next_state.OUTPUTSELECT
+control => next_state.OUTPUTSELECT
+control => next_state.OUTPUTSELECT
+control => next_state.OUTPUTSELECT
+control => next_state.OUTPUTSELECT
+control => always0.IN1
+control => always1.IN0
+control => always3.IN0
+red <= <VCC>
+yellow <= <VCC>
+green <= <VCC>
+
+

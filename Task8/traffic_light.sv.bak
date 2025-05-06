@@ -1,0 +1,14 @@
+module traffic_light # (
+	parameter delay = 2
+) (
+	input clk,
+	input rst,
+	input control,
+	output red,
+	output yellow,
+	output green
+);
+
+
+
+endmodule

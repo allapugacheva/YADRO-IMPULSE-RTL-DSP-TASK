@@ -1,0 +1,20 @@
+module transmitter # (
+	parameter DATA_LEN = 8
+) (
+	input clk_source,
+	input clk_target,
+	input rst_target,
+	
+	input [DATA_LEN - 1:0]  indata,
+	output [DATA_LEN - 1:0] outdata
+);
+
+	synchronizer syn (
+		.clk_target (clk_target),
+		.rst        (rst_target),
+		
+		.clk_source (clk_source),
+		.clk_syn    ()
+	);
+
+endmodule
