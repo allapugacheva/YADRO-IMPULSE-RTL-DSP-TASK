@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 module tb();
 
 	logic clk, rst;
@@ -6,6 +7,7 @@ module tb();
 	logic pop;
 	logic [7:0] outdata;
 	logic empty, full;
+	logic [14:0] wr_addr, rd_addr;
 
 	fifo dut (
 		.clk     (clk),
@@ -21,11 +23,10 @@ module tb();
 		.full    (full)
 	);
 	
-	mailbox#(logic [7:0]) monitor = new();
+	assign wr_addr = dut.wr_addr;
+	assign rd_addr = dut.rd_addr;
 	
-	initial begin
-		void'($urandom(42));
-	end
+	mailbox#(logic [7:0]) monitor = new();
 	
 	initial begin
 		clk = 1'b0;
@@ -46,13 +47,15 @@ module tb();
 		
 		@(negedge rst);
 		
-		repeat (30) begin
+		repeat (10) @(posedge clk);
+		
+		repeat (50) begin
 			
 			if (~full) begin
 				push = $urandom_range(0, 1);
 				
 				if (push) begin
-					indata = $urandom();
+					indata = $urandom_range(0, 256);
 					monitor.put(indata);
 				end
 				else
