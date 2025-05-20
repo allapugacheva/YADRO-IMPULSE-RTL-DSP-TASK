@@ -15,27 +15,23 @@ module tb();
 	assign state = dut.state;
 	
 	initial begin
-		void'($urandom(42));
-	end
-	
-	initial begin
-		rst = 1'b1;
+		rst     <= 1'b1;
 		
-		#10 rst = 1'b0;
+		#10 rst <= 1'b0;
 	end
 	
 	initial begin
-		clk = 1'b0;
+		clk            <= 1'b0;
 		
-		forever #5 clk = ~clk;
+		forever #5 clk <= ~clk;
 	end
 	
 	initial begin
-		control = 1'b0;
+		control <= 1'b0;
 		@(negedge rst);
 		
 		repeat(50) begin
-			control = $urandom_range(0, 1);
+			control <= $urandom_range(0, 1);
 			@(posedge clk);
 		end
 		

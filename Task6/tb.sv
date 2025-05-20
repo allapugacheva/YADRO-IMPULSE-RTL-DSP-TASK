@@ -34,47 +34,49 @@ module tb();
     mailbox#(packet) monitor = new();
     
     initial begin
-        rst = 1'b1;
+        rst      <= 1'b1;
         
-        #100 rst = 1'b0;
+        #100 rst <= 1'b0;
     end
     
     initial begin
-        clk = 1'b0;
+        clk            <= 1'b0;
         
-        forever #5 clk = ~clk;
+        forever #5 clk <= ~clk;
     end
     
     initial begin
         packet pkt;
-        a1 = 'z;
-        b1 = 'z;
-        a2 = 'z;
-        b2 = 'z;
-        in_vld = 1'b0;
+        logic vld;
+        a1     <= 'z;
+        b1     <= 'z;
+        a2     <= 'z;
+        b2     <= 'z;
+        in_vld <= 1'b0;
         @(negedge rst);
         @(posedge clk);
         
         repeat(20) begin
-            in_vld = $urandom_range(0, 1);
-            if (in_vld) begin
-                a1 = $urandom_range(-128, 127);
-                b1 = $urandom_range(-128, 127);
-                a2 = $urandom_range(-128, 127);
-                b2 = $urandom_range(-128, 127);
-                
-                pkt.a1 = a1;
-                pkt.a2 = a2;
-                pkt.b1 = b1;
-                pkt.b2 = b2;
-                
+            vld = $urandom_range(0, 1);
+            if (vld) begin                
+                pkt.a1 = $urandom_range(-128, 127);
+                pkt.a2 = $urandom_range(-128, 127);
+                pkt.b1 = $urandom_range(-128, 127);
+                pkt.b2 = $urandom_range(-128, 127);
                 monitor.put(pkt);
+                
+                a1     <= pkt.a1;
+                a2     <= pkt.a2;
+                b1     <= pkt.b1;
+                b2     <= pkt.b2;
+                in_vld <= 1'b1;
             end
             else begin
-                a1 = 'z;
-                b1 = 'z;
-                a2 = 'z;
-                b2 = 'z;
+                a1     <= 'z;
+                b1     <= 'z;
+                a2     <= 'z;
+                b2     <= 'z;
+                in_vld <= 1'b0;
             end
             @(posedge clk);
         end

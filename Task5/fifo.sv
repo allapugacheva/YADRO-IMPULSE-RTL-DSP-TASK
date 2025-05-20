@@ -26,7 +26,7 @@ module fifo # (
             rd_ptr <= '0;
             rd_ptr_odd_circle <= 1'b0;
         end
-        else if (pop) begin
+        else if (pop & ~empty) begin
             if (rd_ptr == MAX_PTR) begin
                 rd_ptr <= '0;
                 rd_ptr_odd_circle <= ~rd_ptr_odd_circle;
@@ -41,7 +41,7 @@ module fifo # (
             wr_ptr <= '0;
             wr_ptr_odd_circle <= 1'b0;
         end
-        else if (push) begin
+        else if (push & ~full) begin
             if (wr_ptr == MAX_PTR) begin
                 wr_ptr <= '0;
                 wr_ptr_odd_circle <= ~wr_ptr_odd_circle;
@@ -74,13 +74,13 @@ module fifo # (
     ) bram (
         .ADDRARDADDR   (rd_addr), 
         .CLKARDCLK     (clk),
-        .ENARDEN       (pop),
+        .ENARDEN       (pop & ~empty),
         .DOUTADOUT     (data_out[31: 0]),
         .DOUTBDOUT     (data_out[63:32]),
         
         .ADDRBWRADDR   (wr_addr),
         .CLKBWRCLK     (clk),
-        .ENBWREN       (push),
+        .ENBWREN       (push & ~full),
         .WEBWE         ({8{push}}),
         .DINADIN       (data_in[31: 0]),
         .DINBDIN       (data_in[63:32]),

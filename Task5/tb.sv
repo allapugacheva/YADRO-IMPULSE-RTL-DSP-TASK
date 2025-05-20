@@ -29,64 +29,66 @@ module tb();
 	mailbox#(logic [7:0]) monitor = new();
 	
 	initial begin
-		clk = 1'b0;
+		clk            <= 1'b0;
 		
-		forever #5 clk = ~clk;
+		forever #5 clk <= ~clk;
 	end
 	
 	initial begin
-		rst = 1'b1;
+		rst     <= 1'b1;
 		
-		#10 rst = 1'b0;
+		#10 rst <= 1'b0;
 	end
 	
 	initial begin
-		push = 1'b0;
-		indata = 'z;
-		pop = 1'b0;
+	   logic make_push, make_pop;
+	   logic [7:0] indata_t;
+	   push   <= 1'b0;
+	   indata <= 'z;
+	   pop    <= 1'b0;
 		
-		@(negedge rst);
+	   @(negedge rst);
+	   repeat (10) @(posedge clk);
 		
-		repeat (10) @(posedge clk);
-		
-		repeat (50) begin
+	   repeat (50) begin
 			
-			if (~full) begin
-				push = $urandom_range(0, 1);
+           make_push = $urandom_range(0, 1);
+           if (make_push & ~full) begin
+              indata_t = $urandom_range(0, 256);
+              monitor.put(indata_t);
+           
+              indata <= indata_t;
+              push   <= 1'b1;
+          end
+          else begin
+              push   <= 1'b0;
+              indata <= 'z;
+          end 
 				
-				if (push) begin
-					indata = $urandom_range(0, 256);
-					monitor.put(indata);
-				end
-				else
-					indata = 'z;
-			end
-			else begin
-				push = 1'b0;
-				indata = 'z;
-			end
+		  if (~empty)
+			  pop <= $urandom_range(0, 1);
+		  else
+			  pop <= 1'b0;
 				
-			if (~empty)
-				pop = $urandom_range(0, 1);
-			else
-				pop = 1'b0;
-				
-			@(posedge clk);
-		end
+		   @(posedge clk);
+	   end
 		
-		$finish;
+	   $finish;
 	end
 	
 	initial begin
-		logic [7:0] expected;
+	   logic [7:0] expected;
 	
-		forever begin
-			@(posedge clk); #1
-			if (pop) begin
-				monitor.get(expected);
-				if (outdata !== expected) $error("%0t BAD RESULT. REAL: %d. EXPECTED: %d", $time(), outdata, expected);
-			end
-		end
-	end
+	   @(posedge clk);
+	   forever begin
+	       if (pop) begin
+	           @(posedge clk);
+	           monitor.get(expected);
+	           if (outdata !== expected) $error("%0t BAD RESULT. REAL: %d. EXPECTED: %d", $time(), outdata, expected);
+	       end
+	       else
+	           @(posedge clk);
+        end
+    end
 
 endmodule

@@ -22,24 +22,9 @@ module complex_mul # (
     localparam ADD_LEN18 = 18 - DATA_LEN;
     
     logic signed [47:0] p;
-    logic signed [DATA_LEN - 1:0] a1_st1_reg, a2_st1_reg, b1_st1_reg, b2_st1_reg,
-                                  a1_st2_reg, a2_st2_reg, b1_st2_reg, b2_st2_reg;
+    logic signed [DATA_LEN - 1:0] a1_st2_reg, a2_st2_reg, b1_st2_reg, b2_st2_reg;
     
     always_ff @ (posedge clk or posedge rst)
-        if (rst) begin
-            a1_st1_reg <= '0;
-            a2_st1_reg <= '0;
-            b1_st1_reg <= '0;
-            b2_st1_reg <= '0;
-        end
-        else begin
-            a1_st1_reg <= a1;
-            a2_st1_reg <= a2;
-            b1_st1_reg <= b1;
-            b2_st1_reg <= b2;            
-        end
-        
-     always_ff @ (posedge clk or posedge rst)
         if (rst) begin
             a1_st2_reg <= '0;
             a2_st2_reg <= '0;
@@ -47,17 +32,16 @@ module complex_mul # (
             b2_st2_reg <= '0;
         end
         else begin
-            a1_st2_reg <= a1_st1_reg;
-            a2_st2_reg <= a2_st1_reg;
-            b1_st2_reg <= b1_st1_reg;
-            b2_st2_reg <= b2_st1_reg;            
-        end       
-        
-    logic vld_st1, vld_st2, vld_st3, vld_st4, vld_st5;
+            a1_st2_reg <= a1;
+            a2_st2_reg <= a2;
+            b1_st2_reg <= b1;
+            b2_st2_reg <= b2;            
+        end
+
+    logic vld_st2, vld_st3, vld_st4, vld_st5;
     
     always_ff @ (posedge clk or posedge rst)
         if (rst) begin
-            vld_st1 <= '0;
             vld_st2 <= '0;
             vld_st3 <= '0;
             vld_st4 <= '0;
@@ -65,8 +49,7 @@ module complex_mul # (
             out_vld <= '0;
         end
         else begin
-            vld_st1 <= in_vld;
-            vld_st2 <= vld_st1;
+            vld_st2 <= in_vld;
             vld_st3 <= vld_st2;
             vld_st4 <= vld_st3;
             vld_st5 <= vld_st4;

@@ -15,34 +15,33 @@ module tb();
 	mailbox#(logic [7:0]) monitor = new();
 	
 	initial begin
-		void'($urandom(42));
-	end
-	
-	initial begin
-		clk_source = 1'b0;
+		clk_source             <= 1'b0;
 		
-		forever #10 clk_source = ~clk_source;
+		forever #10 clk_source <= ~clk_source;
 	end
 	
 	initial begin
-		clk_target = 1'b0;
+		clk_target            <= 1'b0;
 		
-		forever #5 clk_target = ~clk_target;
+		forever #5 clk_target <= ~clk_target;
 	end
 	
 	initial begin
-		rst_target = 1'b1;
+		rst_target     <= 1'b1;
 		
-		#10 rst_target = 1'b0;
+		#10 rst_target <= 1'b0;
 	end
 	
 	initial begin
-		indata = 'z;
+	    logic [7:0] indata_t;
+		indata <= 'z;
 	
 		repeat (30) begin
 			@(posedge clk_source);
-			indata = $urandom();
-			monitor.put(indata);
+			indata_t = $urandom_range(0, 256);
+			monitor.put(indata_t);
+			
+			indata <= indata_t;
 		end
 		
 		$finish;
@@ -54,9 +53,7 @@ module tb();
 		@(negedge rst_target);
 	
 		forever begin
-			@(posedge clk_target);
-			@(posedge clk_target);
-			#1
+			@(posedge clk_source);
 			
 			monitor.get(expected);
 			if (expected !== outdata) $error("%0t BAD RESULT. REAL: %d. EXPECTED: %d", $time(), outdata, expected);
